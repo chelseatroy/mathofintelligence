@@ -1,0 +1,5 @@
+name: mathofintelligence
+dependencies:
+- python=2
+- numpy
+- matplotlib
