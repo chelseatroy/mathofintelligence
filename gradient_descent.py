@@ -1,6 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from collections import OrderedDict
+from bokeh.plotting import figure
+from bokeh.io import export_png
+from bokeh.palettes import Spectral6
+
 # TODO:
 # add the option to step until the total cost is below a certain threshold
 # add the option to step until the gradient is below a certain threshold
@@ -44,18 +49,36 @@ class GradientDescent():
         return predicted_values
 
     def plot(self):
-        if len(self.x) == 1:
-            fig, ax = plt.subplots(nrows=1, ncols=1)
-            print("x")
-            print(self.x)
-            ax.scatter(self.x[0], self.y)
-            ax.plot(self.x[0], self.predict(self.x))
-            fig.savefig('points.png')
-        else:
-            self.bar_chart_bonanzaaaaa()
+        # if len(self.x) == 1:
+        #     fig, ax = plt.subplots(nrows=1, ncols=1)
+        #     print("x")
+        #     print(self.x)
+        #     ax.scatter(self.x[0], self.y)
+        #     ax.plot(self.x[0], self.predict(self.x))
+        #     fig.savefig('points.png')
+        # else:
+        self.bar_chart_bonanzaaaaa()
 
     def bar_chart_bonanzaaaaa(self):
-        _ = 7
+        bar_opts = dict(width=0.3, alpha=0.8)
+        p = figure(title="Prediction Breakdown by Feature Weight", y_range=(0, max(self.predict(self.x))), tools='')
+
+        number_of_data_points = len(self.x[0])
+        indices = np.arange(number_of_data_points)
+        intercepts = np.full((number_of_data_points,), self.intercept)
+
+        p.vbar(bottom=0, top=intercepts, x=indices, legend="intercept", **bar_opts)
+
+        for feature_index, feature in enumerate(self.x.tolist()):
+            bar_title = "skrooooooo"
+            weight = self.weights[feature_index]
+            weight_account = np.array(feature) * weight
+
+            color = Spectral6[(feature_index % 6)]
+            print(color)
+            p.vbar(bottom=0, top=weight_account, x=indices, legend=bar_title, color=color, **bar_opts)
+
+        export_png(p, filename="plot.png")
 
     def step(self, x, y, learning_rate=0.0001):
         for index, feature in enumerate(x.tolist()):
