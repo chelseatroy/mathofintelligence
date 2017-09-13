@@ -1,16 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-from collections import OrderedDict
-from bokeh.plotting import figure
-from bokeh.io import export_png
-from bokeh.palettes import Spectral6
+import pandas as pd
 
 # TODO:
+# have the plot sort by increasing predict() value and distribute along x axis by point index
 # add the option to step until the total cost is below a certain threshold
 # add the option to step until the gradient is below a certain threshold
 # add documentation
-# make multi-feature bar chart visualizations
 
 class GradientDescent():
     weights = []
@@ -18,12 +14,22 @@ class GradientDescent():
 
     x = []
     y = []
+    maybe_labels = []
 
     def fit(self, x, y):
-        self.x = x
-        self.y = y
-        number_of_features = x.shape[0]
-        number_of_points = x.shape[1]
+        if isinstance(x, np.ndarray):
+            self.x = x.tolist()
+            self.y = y.tolist()
+            number_of_features = x.shape[0]
+            number_of_points = x.shape[1]
+        elif isinstance(x, pd.DataFrame):
+            self.maybe_labels = x.columns.values.tolist()
+            for column in x:
+                x_array = x[column]
+                self.x.append(x_array)
+            self.y = y.values
+            number_of_features = x.shape[1]
+            number_of_points = x.shape[0]
 
         if number_of_points != len(self.y): raise Exception(
             "Number of feature values not equal to number of output values.")
@@ -32,12 +38,7 @@ class GradientDescent():
         self.weights = [0 for _ in range(number_of_features)]
 
         for i in range(num_iterations):
-            self.step(x, y)
-            if i % 100 == 0:
-                print("weights: ")
-                print(self.weights)
-                print("intercept: ")
-                print(self.intercept)
+            self.step()
 
     def predict(self, input_data):
         predicted_values = [self.intercept for _ in range(len(input_data[0]))]
@@ -49,45 +50,45 @@ class GradientDescent():
         return predicted_values
 
     def plot(self):
-        # if len(self.x) == 1:
-        #     fig, ax = plt.subplots(nrows=1, ncols=1)
-        #     print("x")
-        #     print(self.x)
-        #     ax.scatter(self.x[0], self.y)
-        #     ax.plot(self.x[0], self.predict(self.x))
-        #     fig.savefig('points.png')
-        # else:
-        self.bar_chart_bonanzaaaaa()
+        if len(self.x) == 1:
+            fig, ax = plt.subplots(nrows=1, ncols=1)
+            ax.scatter(self.x[0], self.y)
+            ax.plot(self.x[0], self.predict(self.x))
+            fig.savefig('plot.png')
+        else:
+            self.plot_with_feature_weights()
 
-    def bar_chart_bonanzaaaaa(self):
-        bar_opts = dict(width=0.3, alpha=0.8)
-        p = figure(title="Prediction Breakdown by Feature Weight", y_range=(0, max(self.predict(self.x))), tools='')
+    def plot_with_feature_weights(self):
+        colors = ['#B000B5', '#C0FFEE', '#BADA55', '#D11D05', '#C0FF33', '#10ADED']
 
         number_of_data_points = len(self.x[0])
         indices = np.arange(number_of_data_points)
         intercepts = np.full((number_of_data_points,), self.intercept)
+        height_so_far = intercepts
+        color_index_changeme = 0
 
-        p.vbar(bottom=0, top=intercepts, x=indices, legend="intercept", **bar_opts)
+        plt.bar(indices, intercepts, 0.3, color='#d62728', label="intercept")
 
-        for feature_index, feature in enumerate(self.x.tolist()):
-            bar_title = "skrooooooo"
+        for feature_index, feature in enumerate(self.x):
             weight = self.weights[feature_index]
             weight_account = np.array(feature) * weight
 
-            color = Spectral6[(feature_index % 6)]
-            print(color)
-            p.vbar(bottom=0, top=weight_account, x=indices, legend=bar_title, color=color, **bar_opts)
+            color = colors[color_index_changeme]
+            plt.bar(indices, weight_account, 0.3, color=color, bottom=height_so_far, label= self.maybe_labels[feature_index] or "feature %d" % (feature_index))
+            height_so_far += weight_account
+            color_index_changeme += 1
 
-        export_png(p, filename="plot.png")
+        plt.legend()
+        plt.savefig('poonts.png')
 
-    def step(self, x, y, learning_rate=0.0001):
-        for index, feature in enumerate(x.tolist()):
+    def step(self, learning_rate=0.0001):
+        for index, feature in enumerate(self.x):
             feature_gradient = 0
             intercept_gradient = 0
             for i in range(len(feature)):
                 N = float(len(feature))
                 x_val = feature[i]
-                y_val = y[i]
+                y_val = self.y[i]
                 intercept_gradient += -(2 / N) * (y_val - ((self.weights[index] * x_val) + self.intercept))
                 feature_gradient += -(2/N) * x_val * (y_val - ((self.weights[index] * x_val) + self.intercept))
             self.intercept = self.intercept - (learning_rate * intercept_gradient)
@@ -105,8 +106,10 @@ class GradientDescent():
         return cost
 
 g = GradientDescent()
-x_values = np.asarray([[1, 2, 3, 5, 7, 8, 9, 5, 6, 7, 3, 5, 6, 7, 2, 5, 6, 8]])
-y_values = np.asarray([1, 2, 4, 5, 6, 7, 2, 5, 7, 8, 2, 7, 3, 2, 6, 1, 7, 2])
+data = pd.read_csv('data.csv')
+
+x_values = data[['some_feature', 'some_other_feature']]
+y_values = data['value_to_predict']
 g.fit(x_values, y_values)
 g.plot()
 
