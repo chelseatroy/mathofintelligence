@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from ui_tools import colors
 
 # TODO:
-# have the plot sort by increasing predict() value and distribute along x axis by point index
 # add the option to step until the total cost is below a certain threshold
 # add the option to step until the gradient is below a certain threshold
 # add documentation
@@ -15,6 +15,7 @@ class GradientDescent():
     x = []
     y = []
     maybe_labels = []
+    dataframe_data = None
 
     def fit(self, x, y):
         if isinstance(x, np.ndarray):
@@ -23,10 +24,9 @@ class GradientDescent():
             number_of_features = x.shape[0]
             number_of_points = x.shape[1]
         elif isinstance(x, pd.DataFrame):
+            self.dataframe_data = x
             self.maybe_labels = x.columns.values.tolist()
-            for column in x:
-                x_array = x[column]
-                self.x.append(x_array)
+            self.x = self.feature_arrays_from(x)
             self.y = y.values
             number_of_features = x.shape[1]
             number_of_points = x.shape[0]
@@ -39,6 +39,13 @@ class GradientDescent():
 
         for i in range(num_iterations):
             self.step()
+
+    def feature_arrays_from(self, x):
+        feature_array = []
+        for column in x:
+            x_array = x[column]
+            feature_array.append(x_array)
+        return feature_array
 
     def predict(self, input_data):
         predicted_values = [self.intercept for _ in range(len(input_data[0]))]
@@ -59,13 +66,17 @@ class GradientDescent():
             self.plot_with_feature_weights()
 
     def plot_with_feature_weights(self):
-        colors = ['#B000B5', '#C0FFEE', '#BADA55', '#D11D05', '#C0FF33', '#10ADED']
-
         number_of_data_points = len(self.x[0])
         indices = np.arange(number_of_data_points)
         intercepts = np.full((number_of_data_points,), self.intercept)
         height_so_far = intercepts
-        color_index_changeme = 0
+        color_index = 0
+
+        if isinstance(self.dataframe_data, pd.DataFrame):
+            self.dataframe_data["predictions"] = self.predict(self.x)
+            self.dataframe_data.sort_values("predictions", inplace=True)
+            self.dataframe_data.drop('predictions', axis=1, inplace=True)
+            self.x = self.feature_arrays_from(self.dataframe_data)
 
         plt.bar(indices, intercepts, 0.3, color='#d62728', label="intercept")
 
@@ -73,13 +84,13 @@ class GradientDescent():
             weight = self.weights[feature_index]
             weight_account = np.array(feature) * weight
 
-            color = colors[color_index_changeme]
+            color = colors[color_index]
             plt.bar(indices, weight_account, 0.3, color=color, bottom=height_so_far, label= self.maybe_labels[feature_index] or "feature %d" % (feature_index))
             height_so_far += weight_account
-            color_index_changeme += 1
+            color_index = color_index + 1 if color_index < len(colors) else 0
 
         plt.legend()
-        plt.savefig('poonts.png')
+        plt.savefig('points.png')
 
     def step(self, learning_rate=0.0001):
         for index, feature in enumerate(self.x):
