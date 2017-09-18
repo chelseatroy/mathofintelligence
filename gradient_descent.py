@@ -74,18 +74,22 @@ class GradientDescent():
 
         if isinstance(self.dataframe_data, pd.DataFrame):
             self.dataframe_data["predictions"] = self.predict(self.x)
+            self.dataframe_data["outcomes"] = self.y
             self.dataframe_data.sort_values("predictions", inplace=True)
             self.dataframe_data.drop('predictions', axis=1, inplace=True)
+            self.y = self.dataframe_data['outcomes'].values
+            self.dataframe_data.drop('outcomes', axis=1, inplace=True)
             self.x = self.feature_arrays_from(self.dataframe_data)
 
-        plt.bar(indices, intercepts, 0.3, color='#d62728', label="intercept")
+        plt.scatter(indices, self.y)
+        plt.bar(indices, intercepts, 0.3, color='#d62728', alpha=0.5, label="intercept")
 
         for feature_index, feature in enumerate(self.x):
             weight = self.weights[feature_index]
             weight_account = np.array(feature) * weight
 
             color = colors[color_index]
-            plt.bar(indices, weight_account, 0.3, color=color, bottom=height_so_far, label= self.maybe_labels[feature_index] or "feature %d" % (feature_index))
+            plt.bar(indices, weight_account, 0.3, color=color, alpha=0.5, bottom=height_so_far, label= self.maybe_labels[feature_index] or "feature %d" % (feature_index))
             height_so_far += weight_account
             color_index = color_index + 1 if color_index < len(colors) else 0
 
