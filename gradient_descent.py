@@ -4,8 +4,8 @@ import pandas as pd
 from ui_tools import colors
 
 # TODO:
-# add the option to step until the total cost is below a certain threshold
-# add the option to step until the gradient is below a certain threshold
+# add the option to step until the total cost is below a certain threshold (how to decide?)
+# add the option to step until the gradient is below a certain threshold for all features (how to decide?)
 # add documentation
 
 class GradientDescent():
@@ -110,13 +110,13 @@ class GradientDescent():
             self.weights[index] = self.weights[index] - (learning_rate * feature_gradient)
 
     def calculate_cost(self):
-        cost = 0
+        squared_cost = 0
+        predictions = self.predict(self.x)
 
         for index, outcome in enumerate(self.y):
-            factors = 0
-            for feature in self.x:
-                factors += feature[index] * self.weights[index]
-            cost += (outcome - factors) **2
+            squared_cost += (outcome - predictions[index]) **2
+
+        cost = squared_cost**(0.5)
 
         return cost
 
