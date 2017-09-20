@@ -81,15 +81,20 @@ class GradientDescent():
             self.dataframe_data.drop('outcomes', axis=1, inplace=True)
             self.x = self.feature_arrays_from(self.dataframe_data)
 
-        plt.scatter(indices, self.y)
-        plt.bar(indices, intercepts, 0.3, color='#d62728', alpha=0.5, label="intercept")
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        ax.scatter(indices, self.y, s=70)
+        ax.bar(indices, intercepts, width=0.5, color='#d62728', alpha=0.5, label="intercept")
 
         for feature_index, feature in enumerate(self.x):
             weight = self.weights[feature_index]
             weight_account = np.array(feature) * weight
+            print(np.array(feature))
+            print(weight)
+            print(weight_account)
 
             color = colors[color_index]
-            plt.bar(indices, weight_account, 0.3, color=color, alpha=0.5, bottom=height_so_far, label= self.maybe_labels[feature_index] or "feature %d" % (feature_index))
+            ax.bar(indices, weight_account, width=0.5, color=color, alpha=0.5, bottom=height_so_far, label= self.maybe_labels[feature_index] or "feature %d" % (feature_index))
             height_so_far += weight_account
             color_index = color_index + 1 if color_index < len(colors) else 0
 
@@ -123,7 +128,7 @@ class GradientDescent():
 g = GradientDescent()
 data = pd.read_csv('data.csv')
 
-x_values = data[['some_feature', 'some_other_feature']]
+x_values = data[['some_feature', 'some_other_feature', 'yet_another_feature', 'a_fourth_feature']]
 y_values = data['value_to_predict']
 g.fit(x_values, y_values)
 g.plot()
