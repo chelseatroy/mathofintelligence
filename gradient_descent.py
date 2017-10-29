@@ -1,7 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import pandas as pd
 from ui_tools import colors
+
+# MATH OF INTELLIGENCE WEEK 1 ASSIGNMENT
 
 # TODO:
 # add the option to step until the total cost is below a certain threshold (how to decide?)
@@ -14,7 +17,11 @@ class GradientDescent():
 
     x = []
     y = []
+
     maybe_labels = []
+    label_colors = []
+    legend_patches = []
+
     dataframe_data = None
 
     def fit(self, x, y):
@@ -68,38 +75,61 @@ class GradientDescent():
     def plot_with_feature_weights(self):
         number_of_data_points = len(self.x[0])
         indices = np.arange(number_of_data_points)
-        intercepts = np.full((number_of_data_points,), self.intercept)
-        height_so_far = intercepts
-        color_index = 0
+        intercepts = np.full((number_of_data_points,), self.intercept, )
 
         if isinstance(self.dataframe_data, pd.DataFrame):
             self.dataframe_data["predictions"] = self.predict(self.x)
             self.dataframe_data["outcomes"] = self.y
+            self.dataframe_data["intercept"] = intercepts.tolist()
             self.dataframe_data.sort_values("predictions", inplace=True)
             self.dataframe_data.drop('predictions', axis=1, inplace=True)
             self.y = self.dataframe_data['outcomes'].values
             self.dataframe_data.drop('outcomes', axis=1, inplace=True)
+            self.feature_arrays_from(self.dataframe_data)
+            self.weights.append(1)
+            for i in range(0, len(self.weights)):
+                self.dataframe_data.ix[:, i] = self.dataframe_data.ix[:, i] * self.weights[i]
             self.x = self.feature_arrays_from(self.dataframe_data)
 
         fig = plt.figure()
         ax = plt.subplot(111)
         ax.scatter(indices, self.y, s=70)
-        ax.bar(indices, intercepts, width=0.5, color='#d62728', alpha=0.5, label="intercept")
+        ax.axhline(0, color="gray")
 
-        for feature_index, feature in enumerate(self.x):
-            weight = self.weights[feature_index]
-            weight_account = np.array(feature) * weight
-            print(np.array(feature))
-            print(weight)
-            print(weight_account)
+        data_with_weights = np.asarray(self.x)
 
-            color = colors[color_index]
-            ax.bar(indices, weight_account, width=0.5, color=color, alpha=0.5, bottom=height_so_far, label= self.maybe_labels[feature_index] or "feature %d" % (feature_index))
-            height_so_far += weight_account
-            color_index = color_index + 1 if color_index < len(colors) else 0
+        data_shape = np.shape(data_with_weights)
 
-        plt.legend()
-        plt.savefig('points.png')
+        # Take negative and positive data apart and cumulate
+        def get_cumulated_array(data, **kwargs):
+            cum = data.clip(**kwargs)
+            cum = np.cumsum(cum, axis=0)
+            d = np.zeros(np.shape(data))
+            d[1:] = cum[:-1]
+            return d
+
+        cumulated_data = get_cumulated_array(data_with_weights, min=0)
+        cumulated_data_neg = get_cumulated_array(data_with_weights, max=0)
+
+        # Re-merge negative and positive data.
+        row_mask = (data_with_weights < 0)
+        cumulated_data[row_mask] = cumulated_data_neg[row_mask]
+        data_stack = cumulated_data
+
+        for i in np.arange(0, data_shape[0]):
+            ax.bar(np.arange(data_shape[1]), data_with_weights[i], bottom=data_stack[i], color=colors[i], alpha=0.3)
+            self.label_colors.append(colors[i])
+
+        final_index = 0
+        for i, label in enumerate(self.maybe_labels):
+            legend_patch = mpatches.Patch(color=self.label_colors[i] + '70', label=label)
+            self.legend_patches.append(legend_patch)
+            final_index = i
+        self.legend_patches.append(mpatches.Patch(color=self.label_colors[final_index + 1] + '70', label='intercept'))
+
+        plt.legend(handles=self.legend_patches)
+
+        plt.savefig('regression_plot_with_weights.png')
 
     def step(self, learning_rate=0.0001):
         for index, feature in enumerate(self.x):
