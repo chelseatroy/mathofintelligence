@@ -5,11 +5,13 @@ import pandas as pd
 
 colors = ['#EFFEC7', '#C0FFEE', '#CC5555', '#BADA55', '#EB01A5', '#C0FF33', '#10ADED']
 
-def regression_plot_with_feature_weights(dataframe_data, x_values, y_values, weights, predictions, intercept, maybe_labels):
+def regression_plot_with_feature_weights(dataframe_data, y_values, weights, predictions, intercept):
     label_colors = []
     legend_patches = []
 
-    number_of_data_points = len(x_values[0])
+    number_of_data_points = dataframe_data.shape[0]
+    legend_labels = dataframe_data.columns.values.tolist()
+
     indices = np.arange(number_of_data_points)
     intercepts = np.full((number_of_data_points,), intercept, )
 
@@ -55,7 +57,7 @@ def regression_plot_with_feature_weights(dataframe_data, x_values, y_values, wei
         label_colors.append(colors[i])
 
     final_index = 0
-    for i, label in enumerate(maybe_labels):
+    for i, label in enumerate(legend_labels):
         legend_patch = mpatches.Patch(color=label_colors[i] + '70', label=label)
         legend_patches.append(legend_patch)
         final_index = i
@@ -63,7 +65,7 @@ def regression_plot_with_feature_weights(dataframe_data, x_values, y_values, wei
 
     plt.legend(handles=legend_patches)
 
-    plt.savefig('regression_plot_with_weights.png')
+    plt.savefig('SMANGITY.png')
 
 def feature_arrays_from(x):
     feature_array = []

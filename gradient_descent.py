@@ -69,8 +69,8 @@ class GradientDescent():
             ax.plot(self.x[0], self.predict(self.x))
             fig.savefig('plot.png')
         else:
-            regression_plot_with_feature_weights(self.dataframe_data, self.x, self.y, self.weights, self.predict(self.x),
-                                                     self.intercept, self.maybe_labels)
+            regression_plot_with_feature_weights(self.dataframe_data, self.y, self.weights, self.predict(self.x),
+                                                     self.intercept)
 
     def step(self, learning_rate=0.0001):
         for index, feature in enumerate(self.x):
