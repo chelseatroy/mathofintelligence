@@ -1,3 +1,7 @@
 Car mpg data:
     Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
     http://archive.ics.uci.edu/ml/datasets/Auto+MPG
+
+Fast food nutrition data:
+    Nutrition Data for Fast Food 2017
+    https://www.statcrunch.com/app/index.php?dataid=2323899
