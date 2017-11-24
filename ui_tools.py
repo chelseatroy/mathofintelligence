@@ -23,7 +23,7 @@ def regression_plot_with_feature_weights(dataframe_data, y_values, weights, pred
     dataframe_data["predictions"] = predictions
     dataframe_data["outcomes"] = y_values
     dataframe_data["intercept"] = intercepts.tolist()
-    dataframe_data.sort_values("outcomes", inplace=True)
+    dataframe_data.sort_values("predictions", inplace=True)
 
     sorted_predictions = dataframe_data["predictions"]
     dataframe_data.drop('predictions', axis=1, inplace=True)
@@ -36,8 +36,8 @@ def regression_plot_with_feature_weights(dataframe_data, y_values, weights, pred
     x_values = feature_arrays_from(dataframe_data)
 
     ax = plt.subplot(111)
-    ax.scatter(indices, y_values, s=70)
-    ax.scatter(indices, sorted_predictions, s=50, c='r', marker='_')
+    ax.scatter(indices, y_values, s=70, c='r')
+    ax.scatter(indices, sorted_predictions, s=30)
     ax.axhline(0, color="gray")
 
     data_with_weights = np.asarray(x_values)
@@ -70,11 +70,11 @@ def regression_plot_with_feature_weights(dataframe_data, y_values, weights, pred
         legend_patches.append(legend_patch)
         final_index = i
     legend_patches.append(mpatches.Patch(color=label_colors[final_index + 1] + '70', label='intercept'))
-    legend_patches.append(mpatches.Circle((1.04, 1), 0.1, label='outcomes'))
-    legend_patches.append(mpatches.Rectangle((1.04, 1), width=5, height=0.1, label='predictions', color='r'))
+    legend_patches.append(mpatches.Circle((1.04, 1), 0.1, label='predictions'))
+    legend_patches.append(mpatches.Circle((1.04, 1), 0.1, label='outcomes', color='r'))
 
     plt.subplots_adjust(right=0.7)
-    plt.legend(handles=legend_patches, bbox_to_anchor=(1.04,1), loc="upper left", handler_map={mpatches.Circle:HandlerPatch(patch_func=make_legend_circle),})
+    plt.legend(handles=legend_patches, bbox_to_anchor=(1.04,1), loc="upper left", prop={'size': 5.5}, handler_map={mpatches.Circle:HandlerPatch(patch_func=make_legend_circle),})
 
     plt.savefig(filename + '.png')
 

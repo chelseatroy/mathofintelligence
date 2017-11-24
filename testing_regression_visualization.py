@@ -5,23 +5,23 @@ import pandas as pd
 
 # CARS
 ####################
-
-car_columns = ["cylinders", "displacement", "horsepower", "weight", "acceleration", "model year"]
-
-car_data = pd.read_csv("cardata.csv")
-car_train, car_test = train_test_split(car_data, test_size=0.1)
-car_y_train = car_train['mpg']
-car_y_test = car_test['mpg']
-car_x_train = car_train[car_columns]
-car_x_test = car_test[car_columns]
-
-car_regressor = LinearRegression(normalize=True)
-car_regressor.fit(car_x_train, car_y_train)
-
-print(car_regressor.score(car_x_test, car_y_test))
-print(car_regressor.coef_)
-regression_plot_with_feature_weights(car_x_test, car_y_test, car_regressor.coef_.tolist(), car_regressor.predict(car_x_test),
-                                     car_regressor.intercept_, 'car_model')
+#
+# car_columns = ["cylinders", "displacement", "horsepower", "weight", "acceleration", "model year"]
+#
+# car_data = pd.read_csv("cardata.csv")
+# car_train, car_test = train_test_split(car_data, test_size=0.1)
+# car_y_train = car_train['mpg']
+# car_y_test = car_test['mpg']
+# car_x_train = car_train[car_columns]
+# car_x_test = car_test[car_columns]
+#
+# car_regressor = LinearRegression(normalize=True)
+# car_regressor.fit(car_x_train, car_y_train)
+#
+# print(car_regressor.score(car_x_test, car_y_test))
+# print(car_regressor.coef_)
+# regression_plot_with_feature_weights(car_x_test, car_y_test, car_regressor.coef_.tolist(), car_regressor.predict(car_x_test),
+#                                      car_regressor.intercept_, 'car_model')
 
 # FAST FOOD
 ######################
@@ -45,31 +45,31 @@ regression_plot_with_feature_weights(car_x_test, car_y_test, car_regressor.coef_
 
 # HOME PRICES
 ######################
-# home_price_data = pd.read_csv("homepricedata.csv")
-# one_hot_locations = pd.get_dummies(home_price_data["location"])
-#
-# home_price_data = result = pd.concat([home_price_data, one_hot_locations], axis=1)
-#
-# home_price_train, home_price_test = train_test_split(home_price_data, test_size=0.1)
-# home_price_y_train = home_price_train["price"]
-# home_price_y_test = home_price_test["price"]
-#
-# home_price_columns = home_price_data.columns.values.tolist()
-# home_price_columns.remove("location")
-# home_price_columns.remove("price")
-# home_price_columns.remove("price per sqft")
-# home_price_x_train = home_price_train[home_price_columns]
-# home_price_x_test = home_price_test[home_price_columns]
-#
-# home_price_regressor = LinearRegression(normalize=True)
-#
-# home_price_regressor.fit(home_price_x_train, home_price_y_train)
-#
-# print(home_price_regressor.score(home_price_x_test, home_price_y_test))
-# print(home_price_regressor.coef_)
-# predictions = home_price_regressor.predict(home_price_x_test)
-# print(predictions)
-#
-# regression_plot_with_feature_weights(home_price_x_test, home_price_y_test, home_price_regressor.coef_.tolist(),
-#                                      predictions,
-#                                      home_price_regressor.intercept_, 'home_price_model')
+home_price_data = pd.read_csv("homepricedata.csv")
+one_hot_locations = pd.get_dummies(home_price_data["location"])
+
+home_price_data = result = pd.concat([home_price_data, one_hot_locations], axis=1)
+
+home_price_train, home_price_test = train_test_split(home_price_data, test_size=0.1)
+home_price_y_train = home_price_train["price"]
+home_price_y_test = home_price_test["price"]
+
+home_price_columns = home_price_data.columns.values.tolist()
+home_price_columns.remove("location")
+home_price_columns.remove("price")
+home_price_columns.remove("price per sqft")
+home_price_x_train = home_price_train[home_price_columns]
+home_price_x_test = home_price_test[home_price_columns]
+
+home_price_regressor = LinearRegression(normalize=True)
+
+home_price_regressor.fit(home_price_x_train, home_price_y_train)
+
+print(home_price_regressor.score(home_price_x_test, home_price_y_test))
+print(home_price_regressor.coef_)
+predictions = home_price_regressor.predict(home_price_x_test)
+print(predictions)
+
+regression_plot_with_feature_weights(home_price_x_test, home_price_y_test, home_price_regressor.coef_.tolist(),
+                                     predictions,
+                                     home_price_regressor.intercept_, 'home_price_model')
