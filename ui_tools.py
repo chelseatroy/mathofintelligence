@@ -33,7 +33,7 @@ def regression_plot_with_feature_weights(dataframe_data, y_values, weights, pred
     feature_arrays_from(dataframe_data)
 
     for i in range(0, len(weights)):
-        feature_contributions = dataframe_data.iloc[:, i] * weights[i] #because svc weights matrix looks different from regressor
+        feature_contributions = dataframe_data.iloc[:, i].map(lambda x: float(x)) * weights[i] #because svc weights matrix looks different from regressor
         dataframe_data.iloc[:, i] = feature_contributions
     x_values = feature_arrays_from(dataframe_data)
 
