@@ -11,6 +11,7 @@ def make_legend_circle(legend, orig_handle, xdescent, ydescent, width, height, f
 #to compare importance of features based on their bar size
 #Actual values show up as dots. Predicted values show up as red Xs.
 def regression_plot_with_feature_weights(dataframe_data, y_values, weights, predictions, intercept, filename="SMANGITY"):
+
     label_colors = []
     legend_patches = []
 
@@ -30,9 +31,10 @@ def regression_plot_with_feature_weights(dataframe_data, y_values, weights, pred
     y_values = dataframe_data['outcomes'].values
     dataframe_data.drop('outcomes', axis=1, inplace=True)
     feature_arrays_from(dataframe_data)
-    weights.append(1)
+
     for i in range(0, len(weights)):
-        dataframe_data.ix[:, i] = dataframe_data.ix[:, i] * weights[i]
+        feature_contributions = dataframe_data.iloc[:, i] * weights[i] #because svc weights matrix looks different from regressor
+        dataframe_data.iloc[:, i] = feature_contributions
     x_values = feature_arrays_from(dataframe_data)
 
     ax = plt.subplot(111)

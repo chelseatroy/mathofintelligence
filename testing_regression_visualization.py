@@ -1,7 +1,11 @@
 from sklearn.linear_model import LinearRegression
-from sklearn.cross_validation import train_test_split
+from sklearn.svm import LinearSVC
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.model_selection import train_test_split
 from ui_tools import regression_plot_with_feature_weights
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 # CARS
 ####################
@@ -25,7 +29,7 @@ import pandas as pd
 
 # FAST FOOD
 ######################
-#
+
 # food_columns = ["serving size", "total fat", "saturated fat", "trans fat", "sodium", "carbs", "sugars", "protein"]
 #
 # food_data = pd.read_csv("nutritiondata.csv")
@@ -38,38 +42,36 @@ import pandas as pd
 # food_regressor = LinearRegression(normalize=True)
 # food_regressor.fit(food_x_train, food_y_train)
 #
-# print(food_regressor.score(food_x_test, food_y_test))
-# print(food_regressor.coef_)
 # regression_plot_with_feature_weights(food_x_test, food_y_test, food_regressor.coef_.tolist(), food_regressor.predict(food_x_test),
 #                                      food_regressor.intercept_, 'nutrition_model')
 
 # HOME PRICES
 ######################
-home_price_data = pd.read_csv("homepricedata.csv")
-one_hot_locations = pd.get_dummies(home_price_data["location"])
-
-home_price_data = result = pd.concat([home_price_data, one_hot_locations], axis=1)
-
-home_price_train, home_price_test = train_test_split(home_price_data, test_size=0.1)
-home_price_y_train = home_price_train["price"]
-home_price_y_test = home_price_test["price"]
-
-home_price_columns = home_price_data.columns.values.tolist()
-home_price_columns.remove("location")
-home_price_columns.remove("price")
-home_price_columns.remove("price per sqft")
-home_price_x_train = home_price_train[home_price_columns]
-home_price_x_test = home_price_test[home_price_columns]
-
-home_price_regressor = LinearRegression(normalize=True)
-
-home_price_regressor.fit(home_price_x_train, home_price_y_train)
-
-print(home_price_regressor.score(home_price_x_test, home_price_y_test))
-print(home_price_regressor.coef_)
-predictions = home_price_regressor.predict(home_price_x_test)
-print(predictions)
-
-regression_plot_with_feature_weights(home_price_x_test, home_price_y_test, home_price_regressor.coef_.tolist(),
-                                     predictions,
-                                     home_price_regressor.intercept_, 'home_price_model')
+# home_price_data = pd.read_csv("homepricedata.csv")
+# one_hot_locations = pd.get_dummies(home_price_data["location"])
+#
+# home_price_data = result = pd.concat([home_price_data, one_hot_locations], axis=1)
+#
+# home_price_train, home_price_test = train_test_split(home_price_data, test_size=0.1)
+# home_price_y_train = home_price_train["price"]
+# home_price_y_test = home_price_test["price"]
+#
+# home_price_columns = home_price_data.columns.values.tolist()
+# home_price_columns.remove("location")
+# home_price_columns.remove("price")
+# home_price_columns.remove("price per sqft")
+# home_price_x_train = home_price_train[home_price_columns]
+# home_price_x_test = home_price_test[home_price_columns]
+#
+# home_price_regressor = LinearRegression(normalize=True)
+#
+# home_price_regressor.fit(home_price_x_train, home_price_y_train)
+#
+# print(home_price_regressor.score(home_price_x_test, home_price_y_test))
+# print(home_price_regressor.coef_)
+# predictions = home_price_regressor.predict(home_price_x_test)
+# print(predictions)
+#
+# regression_plot_with_feature_weights(home_price_x_test, home_price_y_test, home_price_regressor.coef_.tolist(),
+#                                      predictions,
+#                                      home_price_regressor.intercept_, 'home_price_model')
